@@ -14,38 +14,36 @@ const PORT = process.env.PORT || 3000;
 // Routes
 // ------
 
-// To test with curl: curl 127.0.0.1:3000/api/v1/tours
-//                    curl -X POST -d "$(<foo.json)" -H 'Content-type: application/json' 127.0.0.1:3000/api/v1/tours
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = function (req, res) {
   res
     .status(200)
     .json({
       status: 'success',
       data: { tours }
     });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
-  const tour = tours.find(c => c.id == +req.params.id)
-  if (tour) {
-    res
-      .status(200)
-      .json({
-        status: 'success',
-        data: { tour }
-      });
-  }
-  else {
-    res
-      .status(400)
-      .json({
-        status: 'error'
-      })
-  }
-});
+const getTour = function (req, res) {
+    const tour = tours.find(c => +c.id == +req.params.id)
+    if (tour) {
+      res
+        .status(200)
+        .json({
+          status: 'success',
+          data: { tour }
+        });
+    }
+    else {
+      res
+        .status(400)
+        .json({
+          status: 'error'
+        })
+    }
+  };
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = function (req, res) {
   const tour = tours.find(c => c.id == +req.params.id)
   if (tour) {
     console.log('Deleting tour!');
@@ -63,9 +61,9 @@ app.delete('/api/v1/tours/:id', (req, res) => {
         status: 'error'
       })
   }
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = function (req, res) {
   const tour = tours.find(c => c.id == +req.params.id);
   if(tour){
     console.log("...doing patch updates!");
@@ -80,9 +78,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
         status: 'error'
       })
   }
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = function (req, res) {
   if (req) {
     id = tours.map(c => c.id).sort((a, b) => a - b)[tours.length - 1] + 1;
     newTour = Object.assign({ "id": id }, req.body);
@@ -106,7 +104,17 @@ app.post('/api/v1/tours', (req, res) => {
         }
       })
   }
-});
+};
+
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(createTour);
+
+app.route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 // --------------
 // Go Express App
