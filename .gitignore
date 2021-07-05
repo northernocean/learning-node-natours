@@ -1,3 +1,6 @@
+dev-data/img/**
+public/img/**
+
 # Logs
 logs
 *.log
