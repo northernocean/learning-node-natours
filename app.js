@@ -5,6 +5,17 @@ const app = express();
 // Middleware for receiving JSON data in requests
 app.use(express.json());
 
+// Custom middleware functions
+app.use((req, res, next) => {
+  console.log("Custom middleware executing...");
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
@@ -13,7 +24,6 @@ const PORT = process.env.PORT || 3000;
 // ------
 // Routes
 // ------
-
 
 const getAllTours = function (req, res) {
   res
@@ -25,6 +35,7 @@ const getAllTours = function (req, res) {
 };
 
 const getTour = function (req, res) {
+    console.log(req.requestTime);
     const tour = tours.find(c => +c.id == +req.params.id)
     if (tour) {
       res
@@ -123,4 +134,3 @@ app.route('/api/v1/tours/:id')
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);
 });
-
