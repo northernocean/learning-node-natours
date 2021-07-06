@@ -1,16 +1,19 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
+
+// ----------
+// Middleware
+// ----------
+
+// Request logging
+app.use(morgan('dev'));
 
 // Middleware for receiving JSON data in requests
 app.use(express.json());
 
 // Custom middleware functions
-app.use((req, res, next) => {
-  console.log("Custom middleware executing...");
-  next();
-});
-
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
@@ -35,24 +38,24 @@ const getAllTours = function (req, res) {
 };
 
 const getTour = function (req, res) {
-    console.log(req.requestTime);
-    const tour = tours.find(c => +c.id == +req.params.id)
-    if (tour) {
-      res
-        .status(200)
-        .json({
-          status: 'success',
-          data: { tour }
-        });
-    }
-    else {
-      res
-        .status(400)
-        .json({
-          status: 'error'
-        })
-    }
-  };
+  console.log(req.requestTime);
+  const tour = tours.find(c => +c.id == +req.params.id)
+  if (tour) {
+    res
+      .status(200)
+      .json({
+        status: 'success',
+        data: { tour }
+      });
+  }
+  else {
+    res
+      .status(400)
+      .json({
+        status: 'error'
+      })
+  }
+};
 
 const deleteTour = function (req, res) {
   const tour = tours.find(c => c.id == +req.params.id)
@@ -76,13 +79,13 @@ const deleteTour = function (req, res) {
 
 const updateTour = function (req, res) {
   const tour = tours.find(c => c.id == +req.params.id);
-  if(tour){
+  if (tour) {
     console.log("...doing patch updates!");
     res
       .status(200)
       .json(tour);
   }
-  else{
+  else {
     res
       .status(400)
       .json({
@@ -117,15 +120,64 @@ const createTour = function (req, res) {
   }
 };
 
-app
-  .route('/api/v1/tours')
+const getAllUsers = function (req, res) {
+  stub(req, res);
+}
+
+const createUser = function (req, res) {
+  stub(req, res);
+}
+
+const getUser = function (req, res) {
+  stub(req, res);
+}
+
+const updateUser = function (req, res) {
+  stub(req, res);
+}
+
+const deleteUser = function (req, res) {
+  stub(req, res);
+}
+
+const stub = function(req, res) {
+  res
+    .status(500)
+    .json({
+      status: 'error',
+      message: 'route not implemented'
+    });
+}
+
+// Tours resource routing
+const tourRouter = express.Router();
+app.use('/api/v1/tours', tourRouter);
+
+tourRouter
+  .route('/')
   .get(getAllTours)
   .post(createTour);
 
-app.route('/api/v1/tours/:id')
+tourRouter
+  .route('/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// Users resource routing
+const userRouter = express.Router();
+app.use('/api/v1/users', userRouter);
+
+userRouter
+  .route('/')
+  .get(getAllUsers)
+  .post(createUser);
+
+userRouter
+  .route('/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // --------------
 // Go Express App
