@@ -97,10 +97,16 @@ const createTour = function (req, res) {
   }
 };
 
+const tourIdExistsInDb = function (id) {
+  if(tours.find(c => c.id == id))
+    return true;
+};
+
 module.exports = {
   getAllTours,
   getTour,
   deleteTour,
   updateTour,
-  createTour
+  createTour,
+  tourIdExistsInDb
 }

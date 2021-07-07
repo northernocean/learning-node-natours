@@ -1,6 +1,21 @@
 express = require('express');
-const router = express.Router();
 const tourController = require('./../controllers/tourController');
+const router = express.Router();
+
+// tour id must exists on any routes sending a tour id param
+router.param('id', (req, res, next, val) => {
+  if (tourController.tourIdExistsInDb(val)) {
+    next();
+  }
+  else {
+    return res
+      .status(404)
+      .json({
+        error: "error",
+        message: "Not Found"
+      });
+  }
+});
 
 console.log(`file: tourRouter.js\n dir: ${__dirname}\n`);
 
