@@ -5,6 +5,10 @@ console.log(`file: tourController.js\n dir: ${__dirname}\n`);
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
+// -----------------------------
+// Tour Resource Implementations
+// -----------------------------
+
 const getAllTours = function (req, res) {
   res
     .status(200)
@@ -102,11 +106,34 @@ const tourIdExistsInDb = function (id) {
     return true;
 };
 
+// -------------------
+// Middleware Handlers
+// -------------------
+
+const tourIsValidToPost = function (req, res, next) {
+  if(req.hasOwnProperty('name')
+    && tour.hasOwnProperty('price')){
+      next();
+    }
+  else{
+    return res
+      .status(400)
+      .json({
+        status: "error",
+        message: "missing name or price"
+      });
+  }
+};
+
+// -------
+// Exports
+// -------
 module.exports = {
   getAllTours,
   getTour,
   deleteTour,
   updateTour,
   createTour,
-  tourIdExistsInDb
+  tourIdExistsInDb,
+  tourIsValidToPost
 }

@@ -9,10 +9,16 @@ console.log(`file: app.js\n dir: ${__dirname}\n`);
 // -----------------
 
 // Request logging
-app.use(morgan('dev'));
+if(process.env.NODE_ENV !== 'production') {
+  console.log('using morgan...');
+  app.use(morgan('dev'));
+}
 
 // For receiving JSON data in requests
 app.use(express.json());
+
+// Serve Static resources
+app.use(express.static(`${__dirname}/public`));
 
 // Custom middleware
 app.use((req, res, next) => {
